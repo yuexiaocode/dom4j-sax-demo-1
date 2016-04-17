@@ -1,0 +1,36 @@
+
+apply plugin: 'java'
+apply plugin: 'maven'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+
+repositories {
+	maven {
+		//url 'http://nexus.jobs.wn518.com:8081/nexus/content/groups/public/'
+		url 'http://localhost:8081/nexus/content/groups/public/'
+	}
+}
+
+
+dependencies {
+	compile 'dom4j:dom4j:1.6.1'
+	compile 'poi:poi:3.10-FINAL'
+}
+
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+
+
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+sourceSets {
+	main.java.srcDirs = ['src']
+	main.resources.srcDirs = ['src', 'conf']
+}
+
