@@ -14,15 +14,26 @@ import org.dom4j.io.SAXReader;
 public class Main2 {
 	public static void main(String[] args) throws IOException, DocumentException {
 		BufferedReader br = new BufferedReader(new FileReader(new File("d:/T_RBJ_DWCBXX_201603.xml")));
-		int max = 100;
-		int i = 0;
+		int max = 1000;
+		int i = 1;
 		String line = br.readLine();
-		while(line!=null && i++<=max){
-			System.out.println(line);
+		int lastClose = 0;
+		int lineIndex = 0;
+		StringBuffer sb = new StringBuffer();
+		while(++lineIndex<=max && line!=null){
+			sb.append(line).append("\n");
+			
+			if(line.trim().equals("</DATA>")){
+				lastClose = lineIndex;
+				System.out.print(sb);
+				sb.delete( 0, sb.length() );
+			}
 			line = br.readLine();
 		}
 		br.close();
-
+		System.out.println("  </DATABODY>");
+		System.out.println("</MSG>");
+		
 	}
 
 }

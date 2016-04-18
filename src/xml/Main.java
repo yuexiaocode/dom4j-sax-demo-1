@@ -1,10 +1,7 @@
 package xml;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -14,9 +11,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.ElementHandler;
 import org.dom4j.ElementPath;
@@ -24,34 +19,25 @@ import org.dom4j.io.SAXReader;
 
 public class Main {
 	public static void main(String[] args) throws IOException, DocumentException {
-		/*BufferedReader br = new BufferedReader(new FileReader(new File("d:/T_RBJ_DWCBXX_201603.xml")));
-		int max = 100;
-		int i = 0;
-		String line = br.readLine();
-		while(line!=null && i++<=max){
-			System.out.println(line);
-			line = br.readLine();
-		}
-		br.close();*/
 		
 		SAXReader reader = new SAXReader();
 		ElementHandler handler = new ElementHandler() {
 			private long total = 0;
 			private Workbook workBook = new HSSFWorkbook();
 			private Sheet sheet =workBook.createSheet("Data");
-			private long everyFileRows = 50000;
+			private long everyFileRows = 65536;
 			@Override
-			public void onStart(ElementPath arg0) {
+			public void onStart(ElementPath elementPath) {
 				
-				arg0.getCurrent().detach();
+				elementPath.getCurrent().detach();
 			}
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public void onEnd(ElementPath elementPath) {
 				
 				long index = total%everyFileRows;
 				if(elementPath.getPath().equals("/MSG/DATABODY")){
-					
 					
 					try {
 						OutputStream os = new FileOutputStream("d:/export/"+
@@ -60,7 +46,6 @@ public class Main {
 						workBook.write(os);
 						os.close();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
@@ -83,8 +68,8 @@ public class Main {
 						e.printStackTrace();
 					}
 				}
-				
-				List<Element> datas = elementPath.getCurrent().elements();
+				Element current = elementPath.getCurrent();
+				List<Element> datas =current.elements();
 				Row row = sheet.createRow((int) index);
 				int j = 0;
 				for(Element e : datas){
@@ -95,40 +80,17 @@ public class Main {
 		        }
 				
 				total++;
-				elementPath.getCurrent().detach();
+				current.detach();
 			}
 		};
 		reader.addHandler("/MSG/DATABODY/DATA",handler);
 		
 		reader.addHandler("/MSG/DATABODY",handler);
 		
-        // 通过read方法读取一个文件 转换成Document对象  
-        Document document = reader.read(new File("d:/T_RBJ_DWCBXX_201603.xml"));  
-        //Document document = reader.read(new File("d:/1.xml"));  
-        //获取根节点元素对象  
-        /*Element root = document.getRootElement();
-        List<Element> datas = root.selectNodes("//DATABODY/DATA");
-        
-        System.out.println(datas.size());
-        Workbook workBook = new HSSFWorkbook();
-        Sheet sheet = workBook.createSheet("娃子");
-        int i = 0;
-        for(Element e : datas){
-        	Row row = sheet.createRow(i++);
-    		List<Element> Rowdatas = e.elements();
-    		int j = 0;
-			for(Element col : Rowdatas){
-				 Cell cell = row.createCell(j++);
-				 cell.setCellValue(col.getText());
-			}
-        }
-        
-        
-        OutputStream os = new FileOutputStream("d:/1.xls");
-        workBook.write(os);
-        os.close()*/;
+       
+        reader.read(new File("d:/T_RBJ_DWCBXX_201603.xml"));  
+        //reader.read(new File("d:/1.xml"));  
+       
 	}
-	
-	
-	//public static void writeExcel(data)
+
 }
